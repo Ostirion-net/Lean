@@ -28,103 +28,71 @@ from itertools import groupby
 from math import ceil
 from clr import AddReference
 import numpy as np
+from typing import List, Set, Tuple, Dict
 AddReference("System")
 AddReference("QuantConnect.Common")
 AddReference("QuantConnect.Algorithm.Framework")
 
 
 class FlexibleUniverseSelectionModel(FundamentalUniverseSelectionModel):
+
     '''
     Class representing a parametrically selected securities universe.
 
     Attributes:
-
-    n_coarse : int
-        Number of securities in the coarse selection.
-    n_fine : int
-        Number of securities in fine selection.
-    age : int
-        Minimum time since IPO.
-    recent: bool int
-        Maximum time from IPO.
-    vol_lim: float
-        Minimum daily volume of each security.
-    min_price: float
-        Minimum price of each security.
-    max_price: float
-        Maximum price of each security.
-    period: srt
-        "Month" or "Day". Recalculate the universe every month or
-        daily.
-    m_cap_lim: float
-        Minimum market cap of security to be considered.
-    markets: list
-        Markets in which the security trades.
-    c_id: str
-        Code of the country of origin of securities.
-    from_top: bool
-        Take the top (True) or bottom (False) volume securities.
-    restrict_country: bool
-        Restrict the country of origin and market for securities.
-    verbose: bool
-        False for silent, True for announcing the universe size and
-        components.
-
+        n_coarse (int): Number of securities in the coarse selection.
+        n_fine (int): Number of securities in fine selection.
+        age (int): Minimum time since IPO.
+        recent (int): Maximum time from IPO.
+        vol_lim (float): Minimum daily volume of each security.
+        min_price (float): Minimum price of each security.
+        max_price (float): Maximum price of each security.
+        period (str): "Month" or "Day". Recalculate the universe every period.
+        m_cap_lim (float): Minimum market cap of security to be considered.
+        markets (list[str]): Markets in which the security trades.
+        c_id (str): Code of the country of origin of securities.
+        from_top (bool): Take the top (True) or bottom (False) volume securities.
+        restrict_country (bool): Restrict the country of origin and market for securities.
+        verbose (bool): False for silent, True for announcing size and components.
     '''
 
     def __init__(self: None,
                  n_coarse: int=1000,
                  n_fine: int=500,
                  age: int=1250,
-                 recent: int =-1,
+                 recent: int=-1,
                  vol_lim: int=0,
                  min_price: int=0,
                  max_price: float=np.Inf,
                  period: str='Month',
                  m_cap_lim: float=5e8,
-                 markets: list=["NYS", "NAS"],
-                 c_id: str ='USA',
+                 markets: List[str]=["NYS", "NAS"],
+                 c_id: str='USA',
                  from_top: bool=True,
                  restrict_country: bool=True,
-                 verbose: bool = False,
+                 verbose: bool=False,
                  filterFineData: bool=True,
                  universeSettings: UniverseSettings=None,
                  securityInitializer: SecurityInitializer=None) -> None:
+
         '''
         Contructor for the fundamental universe selection model.
 
-        Parameters:
-
-        n_coarse : int
-            Number of securities in the coarse selection.
-        n_fine : int
-            Number of securities in fine selection.
-        age : int
-            Minimum time since IPO.
-        recent: bool int
-            Maximum time from IPO.
-        vol_lim: float
-            Minimum daily volume of each security.
-        min_price: float
-            Minimum price of each security.
-        max_price: float
-            Maximum price of each security.
-        period: srt
-            "Month" or "Day". Recalculate the universe every month or
-            daily.
-        m_cap_lim: float
-            Minimum market cap of security to be considered.
-        markets: list
-            Markets in which the security trades.
-        c_id: str
-            Code of the country of origin of securities.
-        from_top: bool
-            Take the top (True) or bottom (False) volume securities.
-        restrict_country: bool
-            Restrict the country of origin and market for securities.
-        verbose: bool
-            False for silent, True for announcing the universe size and
-            components.
+        Args:
+            n_coarse (int): Number of securities in the coarse selection.
+            n_fine (int): Number of securities in fine selection.
+            age (int): Minimum time since IPO.
+            recent (int): Maximum time from IPO.
+            vol_lim (float): Minimum daily volume of each security.
+            min_price (float): Minimum price of each security.
+            max_price (float): Maximum price of each security.
+            period (str): "Month" or "Day". Recalculate the universe every period.
+            m_cap_lim (float): Minimum market cap of security to be considered.
+            markets (list[str]): Markets in which the security trades.
+            c_id (str): Code of the country of origin of securities.
+            from_top (bool): Take the top (True) or bottom (False) volume securities.
+            restrict_country (bool): Restrict the country of origin and market for securities.
+            verbose (bool): False for silent, True for announcing size and components.
         '''
 
         super().__init__(filterFineData, universeSettings, securityInitializer)
@@ -151,16 +119,18 @@ class FlexibleUniverseSelectionModel(FundamentalUniverseSelectionModel):
     def SelectCoarse(self,
                      algorithm: QCAlgorithm,
                      coarse: CoarseFundamental) -> FineFundamental:
+
         '''
         Coarse unviverse selection method.
 
         Args:
-            algorithm: QC algorithm.
-            coarse: QC Coarse universe object.
+            algorithm (QCAlgorithm): Current algorithm instance.
+            coarse (CoarseFundamental): QC Coarse universe object.
 
         Returns:
-            fine: QC fine universe object.
+            fine (FineFundamental): QC fine universe object.
         '''
+
         if self.period == 'Month':
             if algorithm.Time.month == self.last_month:
                 return Universe.Unchanged
@@ -185,16 +155,18 @@ class FlexibleUniverseSelectionModel(FundamentalUniverseSelectionModel):
     def SelectFine(self,
                    algorithm: QCAlgorithm,
                    fine: FineFundamental) -> FineFundamental:
+
         '''
         Coarse unviverse selection method.
 
         Args:
-            algorithm: QC algorithm.
-            fine: QC fine universe object.
+            algorithm (QCAlgorithm): Current algorithm instance.
+            fine (FineFundamental): QC fine universe object.
 
         Returns:
-        new_universe: Selected QC Universe
+            new_universe (FineFundamental): QC fine universe object.
         '''
+
         f = fine
         a = algorithm
         sort_sector = sorted([x for x in f if
