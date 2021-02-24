@@ -75,26 +75,6 @@ class FlexibleUniverseSelectionModel(FundamentalUniverseSelectionModel):
                  universeSettings: UniverseSettings=None,
                  securityInitializer: SecurityInitializer=None) -> None:
 
-        '''
-        Contructor for the fundamental universe selection model.
-
-        Args:
-            n_coarse (int): Number of securities in the coarse selection.
-            n_fine (int): Number of securities in fine selection.
-            age (int): Minimum time since IPO.
-            recent (int): Maximum time from IPO.
-            vol_lim (float): Minimum daily volume of each security.
-            min_price (float): Minimum price of each security.
-            max_price (float): Maximum price of each security.
-            period (str): "Month" or "Day". Recalculate the universe every period.
-            m_cap_lim (float): Minimum market cap of security to be considered.
-            markets (list[str]): Markets in which the security trades.
-            c_id (str): Code of the country of origin of securities.
-            from_top (bool): Take the top (True) or bottom (False) volume securities.
-            restrict_country (bool): Restrict the country of origin and market for securities.
-            verbose (bool): False for silent, True for announcing size and components.
-        '''
-
         super().__init__(filterFineData, universeSettings, securityInitializer)
 
         # Parameter settings:
